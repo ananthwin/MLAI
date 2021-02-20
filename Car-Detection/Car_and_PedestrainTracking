@@ -43,5 +43,9 @@ while True:
     #detect cars
     cv2.imshow('Clever Pro car Detecor',frame)
 
-    cv2.waitKey(1)
+    key=cv2.waitKey(1)
+    ### Stop if Q key is pressed(q ascii number)
+    if key==81 or key==113:
+        break
 print("Code Completed") 
+video.release()
