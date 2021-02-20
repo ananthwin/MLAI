@@ -6,29 +6,42 @@ import cv2
 
 #img path
 img_file='car.jpg'
+#video = cv2.VideoCapture('v2.mp4')
+video = cv2.VideoCapture('v5.mp4')
 
-#Pre-Trained  car classifier
-classifier_file = 'car_detector.xml'
-
-#create opencv image
-img = cv2.imread(img_file)
-
-#conver to grayscale(need for haar cascade)
-black_n_white = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+#Pre-Trained  car and pedestrain classifier
+car_tracker_file = 'car_detector.xml'
+pedestrain_tracker_file = 'haarcascade_fullbody.xml'
 
 #create car classifier
-car_tracker = cv2.CascadeClassifier(classifier_file)
+car_tracker = cv2.CascadeClassifier(car_tracker_file)
+pedestrain_tracker=cv2.CascadeClassifier(pedestrain_tracker_file)
 
-#create car classifier
-cars = car_tracker.detectMultiScale(black_n_white)
+#It read single frame from the video, it return two value 1) if read success is or not 2)frame
+while True:
+ #Read the current frame
+    (read_successful, frame) = video.read()
 
-#Draw rectangle around cars   
-for(x,y,w,h) in cars:
-    cv2.rectangle(img, (x, y),(x+w, y+h),(0,0,255),2) 
+    #Safe coding.
+    if read_successful:
+        grayscaled_frame = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+    else:
+        break  
+    
+    #detect cars and pedestrians
+    cars = car_tracker.detectMultiScale(grayscaled_frame) 
+    pedestrains = pedestrain_tracker.detectMultiScale(grayscaled_frame) 
 
-#detect cars
-cv2.imshow('Clever Pro car Detecor',img)
+    #Draw rectangle around cars   
+    for(x,y,w,h) in cars:
+        cv2.rectangle(frame, (x, y),(x+w, y+h),(0,0,255),2) 
+    
+    #Draw rectangle around pedestrain 
+    for(x,y,w,h) in pedestrains:
+        cv2.rectangle(frame, (x, y),(x+w, y+h),(0,255,255),2) 
 
-cv2.waitKey()
+    #detect cars
+    cv2.imshow('Clever Pro car Detecor',frame)
 
-print("Code Completed")
+    cv2.waitKey(1)
+print("Code Completed") 
